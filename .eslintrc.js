@@ -13,5 +13,6 @@ module.exports = {
     indent: 0,
     'space-before-function-paren': 0,
     'comma-dangle': 0,
+    'eol-last': 0,
   },
 }

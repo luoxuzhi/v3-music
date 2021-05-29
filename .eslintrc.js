@@ -14,5 +14,6 @@ module.exports = {
     'space-before-function-paren': 0,
     'comma-dangle': 0,
     'eol-last': 0,
+    'no-unused-vars': 0,
   },
 }

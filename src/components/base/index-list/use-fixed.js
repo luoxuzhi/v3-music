@@ -27,7 +27,7 @@ export default function useFixed(props) {
         currentIndex.value = i
         // 向上顶标题的功能
         distance.value = heightBottom - newY
-        console.log('distance.value :>> ', distance.value)
+        // console.log('distance.value :>> ', distance.value)
       }
     }
   })

@@ -27,20 +27,22 @@ export default function useFixed(props) {
         currentIndex.value = i
         // 向上顶标题的功能
         distance.value = heightBottom - newY
+        console.log('distance.value :>> ', distance.value)
       }
     }
   })
 
+  // 获取fixedTitle思路，监听滚定过程不断更新currentIndex
   const fixedTitle = computed(() => {
     // 下拉返回空
     if (scrollY.value < 0) {
       return ''
     }
-
     const currentGroup = props.data[currentIndex.value]
     return currentGroup ? currentGroup.title : ''
   })
 
+  // 获取fixedStyle思路，监听滚动过程不停更新下一组歌手开头距离和当前scrollY的差值
   const fixedStyle = computed(() => {
     const distanceVal = distance.value
     const diff = distanceVal > 0 && distanceVal < TITLE_HEIGHT ? distanceVal - TITLE_HEIGHT : 0

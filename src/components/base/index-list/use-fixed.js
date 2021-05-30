@@ -32,7 +32,7 @@ export default function useFixed(props) {
     }
   })
 
-  // 获取fixedTitle思路，监听滚定过程不断更新currentIndex
+  // 获取fixedTitle思路，监听滚动过程不断更新currentIndex
   const fixedTitle = computed(() => {
     // 下拉返回空
     if (scrollY.value < 0) {

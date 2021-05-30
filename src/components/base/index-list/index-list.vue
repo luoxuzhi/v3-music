@@ -1,5 +1,5 @@
 <template>
-  <scroll class="index-list">
+  <scroll class="index-list" ref="groupRef">
     <ul>
       <li v-for="group in data" :key="group.title" class="group">
         <h2 class="title">{{ group.title }}</h2>
@@ -19,6 +19,8 @@
 
 <script>
 import Scroll from '@/components/base/scroll/scroll'
+import useFixed from './use-fixed'
+
 export default {
   name: 'index-list',
   components: {
@@ -31,6 +33,11 @@ export default {
         return []
       },
     },
+  },
+  setup(props) {
+    const { groupRef } = useFixed(props)
+
+    return { groupRef }
   },
 }
 </script>

@@ -70,5 +70,5 @@ export default function useFixed(props) {
     scrollY.value = -pos.y
   }
 
-  return { groupRef, onScroll, fixedTitle, fixedStyle }
+  return { groupRef, onScroll, fixedTitle, fixedStyle, currentIndex }
 }

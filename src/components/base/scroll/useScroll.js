@@ -25,4 +25,7 @@ export default function useScroll(wrapperRef, options, emit) {
   onUnmounted(() => {
     scroll.value.destroy()
   })
+
+  // 返回的scoll在setup中再次返回的时候，在实例中会和props里面的属性同级
+  return scroll
 }

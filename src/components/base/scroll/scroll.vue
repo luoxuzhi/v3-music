@@ -6,7 +6,7 @@
 
 <script>
 import { ref } from 'vue'
-import useScroll from './use-scroll'
+import useScroll from './useScroll'
 
 export default {
   props: {
@@ -22,9 +22,9 @@ export default {
   emits: ['scroll'],
   setup(props, { emit }) {
     const rootRef = ref(null)
-    useScroll(rootRef, props, emit)
+    const scroll = useScroll(rootRef, props, emit)
 
-    return { rootRef }
+    return { rootRef, scroll }
   },
 }
 </script>

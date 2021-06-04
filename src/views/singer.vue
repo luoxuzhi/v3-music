@@ -1,6 +1,6 @@
 <template>
   <div class="singer" v-loading="!singers.length">
-    <index-list :data="singers"></index-list>
+    <index-list :data="singers" ref="indexList"></index-list>
   </div>
 </template>
 
@@ -18,7 +18,7 @@ export default {
   async created() {
     const result = await getSingerList()
     this.singers = result.singers
-    console.log('result :', result)
+    console.log('this.$refs.indexList :', this.$refs.indexList)
   },
 }
 </script>

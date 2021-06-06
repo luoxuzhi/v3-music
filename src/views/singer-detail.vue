@@ -60,9 +60,9 @@ export default {
 
     const result = await getSingerDetail(this.computedSinger)
     const songs = await processSongs(result.songs)
-    console.log(songs)
-    // this.songs = songs
-    this.songs = []
+    // console.log(songs)
+    this.songs = songs
+    // this.songs = []
     this.loading = false
   },
 }

@@ -3,6 +3,12 @@
     <div class="back" @click="goBack"><i class="icon-back"></i></div>
     <div class="title">{{ title }}</div>
     <div class="bg-image" :style="bgImageStyle" ref="bgImage">
+      <div class="play-btn-wrapper" :style="playBtnStyle">
+        <div class="play-btn" v-show="songs.length > 0" @click="random">
+          <i class="icon-play"></i>
+          <span class="text">随机播放全部</span>
+        </div>
+      </div>
       <div class="filter" :style="filterStyle"></div>
     </div>
     <scroll
@@ -14,7 +20,7 @@
       @scroll="onSongScroll"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list :songs="songs" @select="selectItem"></song-list>
       </div>
     </scroll>
   </div>
@@ -23,6 +29,8 @@
 <script>
 import Scroll from '@/components/base/scroll/scroll'
 import SongList from '@/components/base/song-list/song-list'
+import { mapActions } from 'vuex'
+
 const RESERVE_HEIGHT = 40
 
 export default {
@@ -82,6 +90,15 @@ export default {
         transform: `scale(${scale}) translateZ(${translateZ}px)`,
       }
     },
+
+    playBtnStyle() {
+      let display = ''
+      if (this.scrollY > this.maxTranslateY) {
+        display = 'none'
+      }
+      return { display }
+    },
+
     // 因为设备不同具体高度不同，因此scoll.list容器的top值不能
     // 通过css设置，需要通过js计算后设置
     scrollStyle() {
@@ -110,6 +127,13 @@ export default {
     onSongScroll(pos) {
       this.scrollY = -pos.y
     },
+    selectItem({ song, index }) {
+      this.selectPlay({ list: this.songs, index })
+    },
+    random() {
+      this.randomPlay(this.songs)
+    },
+    ...mapActions(['selectPlay', 'randomPlay']),
   },
   mounted() {
     this.imageHeight = this.$refs.bgImage.clientHeight

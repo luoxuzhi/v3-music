@@ -7,6 +7,7 @@ const Singer = () => import(/* webpackChunkName: "about" */ '@/views/singer.vue'
 const TopList = () => import(/* webpackChunkName: "about" */ '@/views/top-list.vue')
 const Search = () => import(/* webpackChunkName: "about" */ '@/views/search.vue')
 const User = () => import(/* webpackChunkName: "about" */ '@/views/user.vue')
+const SingerDetail = () => import(/* webpackChunkName: "about" */ '@/views/singer-detail.vue')
 
 const routes = [
   {
@@ -20,6 +21,12 @@ const routes = [
   {
     path: '/singer',
     component: Singer,
+    children: [
+      {
+        path: ':id',
+        component: SingerDetail,
+      },
+    ],
   },
   {
     path: '/top-list',

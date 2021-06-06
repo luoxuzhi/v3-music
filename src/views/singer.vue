@@ -1,13 +1,21 @@
 <template>
   <div class="singer" v-loading="!singers.length">
     <index-list :data="singers" ref="indexList" @select="selectSinger"></index-list>
-    <router-view :singer="selectedSinger"></router-view>
+    <!-- <router-view :singer="selectedSinger"></router-view> -->
+    <router-view v-slot="{ Component }">
+      <!-- appear为在当前路由时刷新时出现动画 -->
+      <transition appear name="slide">
+        <component :is="Component" :singer="selectedSinger" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
 <script>
 import { getSingerList } from '@/service/singer'
 import IndexList from '@/components/base/index-list/index-list'
+import storage from 'good-storage'
+import { SINGER_KEY } from '@/assets/js/constant'
 
 export default {
   data() {
@@ -25,9 +33,13 @@ export default {
   methods: {
     selectSinger(singer) {
       this.selectedSinger = singer
+      this.cacheSinger(singer)
       this.$router.push({
         path: `/singer/${singer.mid}`,
       })
+    },
+    cacheSinger(singer) {
+      storage.session.set(SINGER_KEY, singer)
     },
   },
 }

@@ -2,8 +2,17 @@
   <div class="music-list">
     <div class="back" @click="goBack"><i class="icon-back"></i></div>
     <div class="title">{{ title }}</div>
-    <div class="bg-image" :style="bgImageStyle" ref="bgImage"><div class="filter"></div></div>
-    <scroll class="list" :style="scrollStyle">
+    <div class="bg-image" :style="bgImageStyle" ref="bgImage">
+      <div class="filter" :style="filterStyle"></div>
+    </div>
+    <scroll
+      class="list"
+      :style="scrollStyle"
+      v-loading="loading"
+      v-no-result:[noResultText]="noResult"
+      :probe-type="3"
+      @scroll="onSongScroll"
+    >
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
       </div>
@@ -14,6 +23,7 @@
 <script>
 import Scroll from '@/components/base/scroll/scroll'
 import SongList from '@/components/base/song-list/song-list'
+const RESERVE_HEIGHT = 40
 
 export default {
   components: { Scroll, SongList },
@@ -21,6 +31,8 @@ export default {
   data() {
     return {
       imageHeight: 0,
+      scrollY: 0,
+      maxTranslateY: 0,
     }
   },
   props: {
@@ -32,18 +44,62 @@ export default {
     },
     title: String,
     pic: String,
+    loading: Boolean,
+    noResultText: {
+      type: String,
+      default: '抱歉，没有找到可播放的歌曲',
+    },
   },
   computed: {
+    noResult() {
+      return !this.loading && !this.songs.length
+    },
     bgImageStyle() {
+      const scrollY = this.scrollY
+      let zIndex = 0
+      let paddingTop = '70%'
+      let height = 0
+      // translateZ是兼容iphone
+      let translateZ = 0
+      // 上滑效果
+      if (scrollY > this.maxTranslateY) {
+        zIndex = 10
+        paddingTop = 0
+        height = `${RESERVE_HEIGHT}px`
+        translateZ = 1
+      }
+      // 下拉放大效果
+      let scale = 1
+      if (scrollY < 0) {
+        scale = 1 + Math.abs(scrollY / this.imageHeight)
+      }
+
       return {
+        zIndex,
+        paddingTop,
+        height,
         backgroundImage: `url(${this.pic})`,
+        transform: `scale(${scale}) translateZ(${translateZ}px)`,
       }
     },
-    // 背景图片宽高比css设置为10：7，因为设备不同具体高度不同，因此scoll.list容器的top值不能
+    // 因为设备不同具体高度不同，因此scoll.list容器的top值不能
     // 通过css设置，需要通过js计算后设置
     scrollStyle() {
       return {
         top: `${this.imageHeight}px`,
+      }
+    },
+    filterStyle() {
+      let blur = 0
+      const scrollY = this.scrollY
+      const imageHeight = this.imageHeight
+      // scrollY>0为上推
+      if (scrollY >= 0) {
+        blur = Math.min(this.maxTranslateY / imageHeight, scrollY / imageHeight) * 20
+      }
+
+      return {
+        backdropFilter: `blur(${blur}px)`,
       }
     },
   },
@@ -51,9 +107,13 @@ export default {
     goBack() {
       this.$router.back()
     },
+    onSongScroll(pos) {
+      this.scrollY = -pos.y
+    },
   },
   mounted() {
     this.imageHeight = this.$refs.bgImage.clientHeight
+    this.maxTranslateY = this.imageHeight - RESERVE_HEIGHT
   },
 }
 </script>
@@ -91,10 +151,8 @@ export default {
   .bg-image {
     position: relative;
     width: 100%;
-    height: 0;
     transform-origin: top;
     background-size: cover;
-    padding-top: 70%;
     .play-btn-wrapper {
       position: absolute;
       bottom: 20px;

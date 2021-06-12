@@ -21,7 +21,7 @@ function deleteFromArray(arr, compare) {
   }
 }
 
-export function save(item, key, compare, maxLen) {
+export function save(item, key, compare, maxLen = 100) {
   const items = storage.get(key, [])
   inertArray(items, item, compare, maxLen)
   storage.set(key, items)
@@ -36,6 +36,7 @@ export function remove(key, compare) {
 }
 
 export function load(key) {
+  // 第二个参数，获取不到返回空数组
   return storage.get(key, [])
 }
 

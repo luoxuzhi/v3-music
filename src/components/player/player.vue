@@ -203,7 +203,6 @@ export default {
 
     function onProgressChanged(progress) {
       progressChangingFlag = false
-      console.log('progress :', progress)
       audioRef.value.currentTime = currentTime.value =
         currentSong.value.duration * progress
 

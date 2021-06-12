@@ -71,6 +71,29 @@ export default {
       const progress = (e.pageX - rect.left) / barWidth
       this.$emit('progress-changed', progress)
     },
+    // onTouchStart(e) {
+    //   this.touch.x1 = e.touches[0].pageX
+    //   this.touch.beginWith = this.$refs.progress.clientWidth
+    // },
+    // onTouchMove(e) {
+    //   const barWidth = this.$el.clientWidth - progressBtnWidth
+    //   const delta = e.touches[0].pageX - this.touch.x1
+    //   const tempWidth = this.touch.beginWith + delta
+    //   const progress = Math.min(1, Math.max(0, tempWidth / barWidth))
+    //   this.offset = barWidth * progress
+    //   this.$emit('progress-changing', progress)
+    // },
+    // onTouchEnd(e) {
+    //   const barWidth = this.$el.clientWidth - progressBtnWidth
+    //   const progress = this.$refs.progress.clientWidth / barWidth
+    //   this.$emit('progress-changed', progress)
+    // },
+    // onProgressClick(e) {
+    //   const barWidth = this.$el.clientWidth - progressBtnWidth
+    //   const rect = this.$el.getBoundingClientRect()
+    //   const progress = (e.pageX - rect.left) / barWidth
+    //   this.$emit('progress-changed', progress)
+    // },
   },
   created() {
     this.touch = {}

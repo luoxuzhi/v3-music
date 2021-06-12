@@ -10,6 +10,19 @@
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{ formatTime(currentTime) }}</span>
+          <div class="progress-bar-wrapper">
+            <progress-bar
+              :process="progress"
+              @progress-changing="onProgressChanging"
+              @progress-changed="onProgressChanged"
+            ></progress-bar>
+          </div>
+          <span class="time time-r">{{
+            formatTime(currentSong.duration)
+          }}</span>
+        </div>
         <div class="operators">
           <div class="icon i-left">
             <i @click="changeMode" :class="modeIcon"></i>
@@ -37,6 +50,8 @@
       @pause="pause"
       @canplay="ready"
       @error="error"
+      @timeupdate="updateTime"
+      @ended="end"
     ></audio>
   </div>
 </template>
@@ -46,14 +61,21 @@ import { useStore } from 'vuex'
 import { computed, ref, watch } from 'vue'
 import useMode from './useMode'
 import useFavorite from './useFavorite'
+import ProgressBar from './progress-bar.vue'
+import { formatTime } from '@/assets/js/util'
+import { PLAY_MODE } from '@/assets/js/constant'
 
 export default {
   name: 'player',
+  components: { ProgressBar },
   setup() {
     // data
     const audioRef = ref(null)
     // 歌词没加载好不允许prev/next/play操作
     const songReady = ref(false)
+    const currentTime = ref(0)
+    // 进度条拖动是否更新currentTime标志位
+    let progressChangingFlag = false
 
     // vuex
     const store = useStore()
@@ -61,6 +83,7 @@ export default {
     const currentSong = computed(() => store.getters.currentSong)
     const playing = computed(() => store.state.playing)
     const currentIndex = computed(() => store.state.currentIndex)
+    const playMode = computed(() => store.state.playMode)
 
     // hooks
     const { modeIcon, changeMode } = useMode()
@@ -71,12 +94,16 @@ export default {
     const playIcon = computed(() =>
       playing.value ? 'icon-pause' : 'icon-play'
     )
+    const progress = computed(() => {
+      return currentTime.value / currentSong.value.duration
+    })
 
     const disableCls = computed(() => (songReady.value ? '' : 'disable'))
 
     watch(currentSong, (newSong) => {
       if (!newSong.url || !newSong.id) return
       songReady.value = false
+      currentTime.value = 0
       const audioEl = audioRef.value
       audioEl.src = newSong.url
       audioEl.play()
@@ -105,6 +132,21 @@ export default {
     // 加载出错允许点击下一首
     function error() {
       songReady.value = true
+    }
+
+    function updateTime(e) {
+      if (!progressChangingFlag) {
+        currentTime.value = e.target.currentTime
+      }
+    }
+
+    function end() {
+      currentTime.value = 0
+      if (playMode.value === PLAY_MODE.loop) {
+        loop()
+      } else {
+        next()
+      }
     }
 
     function togglePlay() {
@@ -150,20 +192,48 @@ export default {
       const audioEl = audioRef.value
       audioEl.currentTime = 0
       audioEl.play()
+      // 循环播放情况下播放结束会触发pause事件导致播放状态为暂停，需要重新自动播放
+      store.commit('setPlayingState', true)
+    }
+
+    function onProgressChanging(progress) {
+      progressChangingFlag = true
+      currentTime.value = currentSong.value.duration * progress
+    }
+
+    function onProgressChanged(progress) {
+      progressChangingFlag = false
+      console.log('progress :', progress)
+      audioRef.value.currentTime = currentTime.value =
+        currentSong.value.duration * progress
+
+      // 暂停状态推动结束恢复播放
+      if (!playing.value) {
+        store.commit('setPlayingState', true)
+      }
     }
 
     return {
       fullScreen,
       currentSong,
+      currentTime,
       audioRef,
       playIcon,
+      progress,
       goBack,
       pause,
       ready,
+      error,
+      updateTime,
+      formatTime,
+      end,
+      onProgressChanging,
+      onProgressChanged,
       togglePlay,
       prev,
       next,
       disableCls,
+      process,
       // mode
       modeIcon,
       changeMode,

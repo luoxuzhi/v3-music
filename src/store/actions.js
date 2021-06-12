@@ -25,8 +25,6 @@ export function changeMode({ commit, state, getters }, mode) {
 
   if (mode === PLAY_MODE.random) {
     commit('setPlayList', shuffle(state.sequenceList))
-  } else if (mode === PLAY_MODE.loop) {
-    commit('setPlayList', [getters.currentSong])
   } else {
     commit('setPlayList', state.sequenceList)
   }

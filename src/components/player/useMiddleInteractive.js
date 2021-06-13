@@ -12,9 +12,24 @@ export default function useMiddleInteractive() {
 
   function onMiddleTouchStart(e) {
     touch.startX = e.touches[0].pageX
+    touch.startY = e.touches[0].pageY
+    // touchstart需要重置
+    touch.touchDirectionLocked = ''
   }
   function onMiddleTouchMove(e) {
     const deltaX = e.touches[0].pageX - touch.startX
+    const deltaY = e.touches[0].pageY - touch.startY
+
+    const absDeltaX = Math.abs(deltaX)
+    const absDeltaY = Math.abs(deltaY)
+
+    if (!touch.touchDirectionLocked) {
+      touch.touchDirectionLocked = absDeltaX >= absDeltaY ? 'h' : 'v'
+    }
+
+    // 添加方向锁，不允许斜着滑动
+    if (touch.touchDirectionLocked === 'v') return
+
     const left = currentView === 'cd' ? 0 : -window.innerWidth
     // 歌词界面的偏移量,在0与-window.innerWidth之间
     const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))

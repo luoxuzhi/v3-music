@@ -19,7 +19,7 @@ export default function useCd() {
   function syncTransform(wrapper, inner) {
     const wrapperTransform = getComputedStyle(wrapper).transform
     const innerTransform = getComputedStyle(inner).transform
-    console.log('wrapperTransform :', wrapperTransform)
+    // console.log('wrapperTransform :', wrapperTransform)
     wrapper.style.transform =
       // tansform合并用concat,最开始为'none'
       wrapperTransform === 'none' ? innerTransform : wrapperTransform.concat('', innerTransform)

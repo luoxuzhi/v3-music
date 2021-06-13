@@ -22,7 +22,27 @@
               />
             </div>
           </div>
+          <div class="playing-lyric-wrapper">
+            <div class="playing-lyric">{{ playingLyric }}</div>
+          </div>
         </div>
+        <scroll class="middle-r" ref="lyricScrollRef">
+          <div class="lyric-wrapper">
+            <div v-if="currentLyric" ref="lyricListRef">
+              <p
+                class="text"
+                :class="{ current: currentLineNum === index }"
+                v-for="(line, index) in currentLyric.lines"
+                :key="line.num"
+              >
+                {{ line.txt }}
+              </p>
+            </div>
+            <div class="pure-music" v-show="pureMusicLyric">
+              {{ pureMusicLyric }}
+            </div>
+          </div>
+        </scroll>
       </div>
       <div class="bottom">
         <div class="progress-wrapper">
@@ -77,13 +97,15 @@ import { computed, ref, watch } from 'vue'
 import useMode from './useMode'
 import useFavorite from './useFavorite'
 import useCd from './useCd'
+import useLyric from './useLyric'
 import ProgressBar from './progress-bar.vue'
+import Scroll from '@/components/base/scroll/scroll'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
 
 export default {
   name: 'player',
-  components: { ProgressBar },
+  components: { ProgressBar, Scroll },
   setup() {
     // data
     const audioRef = ref(null)
@@ -105,6 +127,19 @@ export default {
     const { modeIcon, changeMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
     const { cdRef, cdImageRef, cdCls } = useCd()
+    const {
+      currentLyric,
+      currentLineNum,
+      playingLyric,
+      pureMusicLyric,
+      lyricScrollRef,
+      lyricListRef,
+      playLyric,
+      stopLyric,
+    } = useLyric({
+      songReady,
+      currentTime,
+    })
 
     // computed
     const playList = computed(() => store.state.playList)
@@ -129,7 +164,13 @@ export default {
     watch(playing, (newPlaying) => {
       if (!songReady.value) return
       const audioEl = audioRef.value
-      newPlaying ? audioEl.play() : audioEl.pause()
+      if (newPlaying) {
+        audioEl.play()
+        playLyric()
+      } else {
+        audioEl.pause()
+        stopLyric()
+      }
     })
 
     function goBack() {
@@ -145,6 +186,7 @@ export default {
       // 一首歌会多次触发ready事件，只设置一次就好
       if (songReady.value) return
       songReady.value = true
+      playLyric()
     }
     // 加载出错允许点击下一首
     function error() {
@@ -216,6 +258,9 @@ export default {
     function onProgressChanging(progress) {
       progressChangingFlag = true
       currentTime.value = currentSong.value.duration * progress
+      // 滑动过程通过调用useLyric hook的playLyric从而触发handleLyric滚动到对应的位置
+      playLyric()
+      stopLyric()
     }
 
     function onProgressChanged(progress) {
@@ -227,6 +272,7 @@ export default {
       if (!playing.value) {
         store.commit('setPlayingState', true)
       }
+      playLyric()
     }
 
     return {
@@ -260,6 +306,13 @@ export default {
       cdRef,
       cdImageRef,
       cdCls,
+      // lyric
+      currentLyric,
+      currentLineNum,
+      playingLyric,
+      pureMusicLyric,
+      lyricScrollRef,
+      lyricListRef,
     }
   },
 }

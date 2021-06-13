@@ -9,8 +9,13 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
-      <div class="middle">
-        <div class="middle-l">
+      <div
+        class="middle"
+        @touchstart.prevent="onMiddleTouchStart"
+        @touchmove.prevent="onMiddleTouchMove"
+        @touchend.prevent="onMiddleTouchEnd"
+      >
+        <div class="middle-l" :style="middleLStyle">
           <div class="cd-wrapper">
             <div ref="cdRef" class="cd">
               <img
@@ -26,7 +31,7 @@
             <div class="playing-lyric">{{ playingLyric }}</div>
           </div>
         </div>
-        <scroll class="middle-r" ref="lyricScrollRef">
+        <scroll ref="lyricScrollRef" class="middle-r" :style="middleRStyle">
           <div class="lyric-wrapper">
             <div v-if="currentLyric" ref="lyricListRef">
               <p
@@ -45,6 +50,10 @@
         </scroll>
       </div>
       <div class="bottom">
+        <div class="dot-wrapper">
+          <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
+          <span class="dot" :class="{ active: currentShow === 'lyric' }"></span>
+        </div>
         <div class="progress-wrapper">
           <span class="time time-l">{{ formatTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
@@ -98,6 +107,7 @@ import useMode from './useMode'
 import useFavorite from './useFavorite'
 import useCd from './useCd'
 import useLyric from './useLyric'
+import useMiddleInteractive from './useMiddleInteractive'
 import ProgressBar from './progress-bar.vue'
 import Scroll from '@/components/base/scroll/scroll'
 import { formatTime } from '@/assets/js/util'
@@ -140,6 +150,15 @@ export default {
       songReady,
       currentTime,
     })
+
+    const {
+      currentShow,
+      middleLStyle,
+      middleRStyle,
+      onMiddleTouchStart,
+      onMiddleTouchMove,
+      onMiddleTouchEnd,
+    } = useMiddleInteractive()
 
     // computed
     const playList = computed(() => store.state.playList)
@@ -313,6 +332,13 @@ export default {
       pureMusicLyric,
       lyricScrollRef,
       lyricListRef,
+      // use-middle-interactive
+      currentShow,
+      middleLStyle,
+      middleRStyle,
+      onMiddleTouchStart,
+      onMiddleTouchMove,
+      onMiddleTouchEnd,
     }
   },
 }

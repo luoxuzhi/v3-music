@@ -22,6 +22,8 @@ export default function useLyric({ songReady, currentTime }) {
     stopLyric()
     currentLyric.value = null
     currentLineNum.value = 0
+    playingLyric.value = ''
+    pureMusicLyric.value = ''
 
     const lyric = await getLyric(newSong)
     store.commit('addSongLyric', { song: newSong, lyric })

@@ -1,6 +1,6 @@
+import { ref, onMounted, onUnmounted } from 'vue'
 import BScroll from '@better-scroll/core'
 import Slide from '@better-scroll/slide'
-import { ref, onMounted, onUnmounted } from 'vue'
 
 BScroll.use(Slide)
 

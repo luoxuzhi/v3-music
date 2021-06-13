@@ -104,7 +104,7 @@
 
 <script>
 import { useStore } from 'vuex'
-import { computed, ref, watch, nextTick } from 'vue'
+import { computed, ref, watch, nextTick, onMounted } from 'vue'
 import useMode from './useMode'
 import useFavorite from './useFavorite'
 import useCd from './useCd'
@@ -136,6 +136,7 @@ export default {
     const playing = computed(() => store.state.playing)
     const currentIndex = computed(() => store.state.currentIndex)
     const playMode = computed(() => store.state.playMode)
+    const playList = computed(() => store.state.playList)
 
     // hooks
     const { modeIcon, changeMode } = useMode()
@@ -165,7 +166,6 @@ export default {
     } = useMiddleInteractive()
 
     // computed
-    const playList = computed(() => store.state.playList)
     const playIcon = computed(() =>
       playing.value ? 'icon-pause' : 'icon-play'
     )

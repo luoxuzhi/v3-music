@@ -13,11 +13,11 @@
           />
         </div>
       </div>
-      <div class="slider-wrapper">
+      <div class="slider-wrapper" ref="sliderWrapperRef">
         <div class="slider-group">
-          <div class="slider-page">
-            <h2 class="name">{{ currentSong.name }}</h2>
-            <p class="desc">{{ currentSong.singer }}</p>
+          <div class="slider-page" v-for="song in playList" :key="song.id">
+            <h2 class="name">{{ song.name }}</h2>
+            <p class="desc">{{ song.singer }}</p>
           </div>
         </div>
       </div>
@@ -38,6 +38,8 @@
 import { useStore } from 'vuex'
 import { computed } from 'vue'
 import useCd from './useCd'
+// import useMiniSlider from './useMiniSlider'
+import useMiniSlider from './useMiniSlider'
 import ProgressClicle from './progress-circle.vue'
 
 export default {
@@ -53,10 +55,12 @@ export default {
   setup() {
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
-    const playing = computed(() => store.state.playing)
     const currentSong = computed(() => store.getters.currentSong)
+    const playing = computed(() => store.state.playing)
+    const playList = computed(() => store.state.playList)
 
     const { cdRef, cdImageRef, cdCls } = useCd()
+    const { sliderWrapperRef } = useMiniSlider()
 
     const miniPlayIcon = computed(() => {
       return playing.value ? 'icon-pause-mini' : 'icon-play-mini'
@@ -69,12 +73,15 @@ export default {
     return {
       fullScreen,
       currentSong,
+      playList,
       miniPlayIcon,
       showNormalPlayer,
       // cd
       cdRef,
       cdImageRef,
       cdCls,
+      // mini-slider-hook
+      sliderWrapperRef,
     }
   },
 }

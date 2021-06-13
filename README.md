@@ -28,4 +28,4 @@ yarn lint
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
-next-learn from 5-10
+5-19 is finished

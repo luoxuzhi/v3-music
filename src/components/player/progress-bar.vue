@@ -27,7 +27,7 @@ export default {
   },
   emits: ['progress-changing', 'progress-changed'],
   props: {
-    process: {
+    progress: {
       type: Number,
       default: 0,
     },
@@ -41,9 +41,8 @@ export default {
     },
   },
   watch: {
-    process(newProgress) {
-      const barWidth = this.$el.clientWidth - progressBtnWidth
-      this.offset = barWidth * newProgress
+    progress(newProgress) {
+      this.setOffset(newProgress)
     },
   },
   methods: {
@@ -70,6 +69,12 @@ export default {
       const rect = this.$el.getBoundingClientRect()
       const progress = (e.pageX - rect.left) / barWidth
       this.$emit('progress-changed', progress)
+    },
+    // 此方法在player.vue也会调用，修复mini-player暂停状态切换到normal-player条形进度条
+    // button位置不对问题
+    setOffset(progress) {
+      const barWidth = this.$el.clientWidth - progressBtnWidth
+      this.offset = barWidth * progress
     },
     // onTouchStart(e) {
     //   this.touch.x1 = e.touches[0].pageX

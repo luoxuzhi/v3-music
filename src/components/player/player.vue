@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" v-show="playList.length">
     <div class="normal-player" v-show="fullScreen">
       <div class="background">
         <img :src="currentSong.pic" alt="" />
@@ -58,7 +58,8 @@
           <span class="time time-l">{{ formatTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
             <progress-bar
-              :process="progress"
+              ref="progressBarRef"
+              :progress="progress"
               @progress-changing="onProgressChanging"
               @progress-changed="onProgressChanged"
             ></progress-bar>
@@ -89,6 +90,7 @@
         </div>
       </div>
     </div>
+    <mini-player :progress="progress" :toggle-play="togglePlay"></mini-player>
     <audio
       ref="audioRef"
       @pause="pause"
@@ -102,23 +104,25 @@
 
 <script>
 import { useStore } from 'vuex'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 import useMode from './useMode'
 import useFavorite from './useFavorite'
 import useCd from './useCd'
 import useLyric from './useLyric'
 import useMiddleInteractive from './useMiddleInteractive'
 import ProgressBar from './progress-bar.vue'
+import MiniPlayer from './mini-player.vue'
 import Scroll from '@/components/base/scroll/scroll'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
 
 export default {
   name: 'player',
-  components: { ProgressBar, Scroll },
+  components: { ProgressBar, Scroll, MiniPlayer },
   setup() {
     // data
     const audioRef = ref(null)
+    const progressBarRef = ref(null)
     // 歌词没加载好不允许prev/next/play操作
     const songReady = ref(false)
     const currentTime = ref(0)
@@ -189,6 +193,15 @@ export default {
       } else {
         audioEl.pause()
         stopLyric()
+      }
+    })
+
+    // 修复mini-player暂停状态切换到normal-player条形进度条
+    // button位置不对问题
+    watch(fullScreen, async (newFullScreen) => {
+      if (newFullScreen) {
+        await nextTick()
+        progressBarRef.value.setOffset(progress.value) // 注意此处传递的参数需要为number
       }
     })
 
@@ -296,9 +309,11 @@ export default {
 
     return {
       fullScreen,
+      playList,
       currentSong,
       currentTime,
       audioRef,
+      progressBarRef,
       playIcon,
       progress,
       goBack,

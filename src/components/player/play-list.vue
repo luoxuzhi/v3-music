@@ -58,7 +58,7 @@
 
 <script>
 import { useStore } from 'vuex'
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import useMode from './useMode'
 import useFavorite from './useFavorite'
 import Scroll from '@/components/base/scroll/scroll'
@@ -85,6 +85,13 @@ export default {
     // hooks
     const { modeIcon, modeText, changeMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
+
+    // 展示播放列表的时候自动滚动到对应的位置
+    watch(currentSong, async (newSong) => {
+      if (!visible.value || !newSong.id) return
+      await nextTick()
+      scrollToElement()
+    })
 
     function getCurrentSongIcon(song) {
       if (song.id === currentSong.value.id) {

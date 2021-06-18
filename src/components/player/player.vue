@@ -191,12 +191,15 @@ export default {
     const disableCls = computed(() => (songReady.value ? '' : 'disable'))
 
     watch(currentSong, (newSong) => {
-      if (!newSong.url || !newSong.id) return
+      if (!newSong.url || !newSong.id) {
+        return
+      }
       songReady.value = false
       currentTime.value = 0
       const audioEl = audioRef.value
       audioEl.src = newSong.url
       audioEl.play()
+      store.commit('setPlayingState', true)
     })
 
     watch(playing, (newPlaying) => {
@@ -271,9 +274,6 @@ export default {
           index = list.length - 1
         }
         store.commit('setCurrentIndex', index)
-        if (!playing.value) {
-          store.commit('setPlayingState', true)
-        }
       }
     }
 
@@ -288,9 +288,6 @@ export default {
           index = 0
         }
         store.commit('setCurrentIndex', index)
-        if (!playing.value) {
-          store.commit('setPlayingState', true)
-        }
       }
     }
 

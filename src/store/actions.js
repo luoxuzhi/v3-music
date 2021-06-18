@@ -33,3 +33,41 @@ export function changeMode({ commit, state, getters }, mode) {
   commit('setCurrentIndex', index)
   commit('setPlayMode', mode)
 }
+
+export function removeSong({ commit, state }, song) {
+  const sequenceList = state.sequenceList.slice()
+  const playList = state.playList.slice()
+
+  const sequenceIndex = findIndex(sequenceList, song)
+  const playIndex = findIndex(playList, song)
+
+  if (sequenceIndex < 0 || playIndex < 0) return
+
+  sequenceList.splice(sequenceIndex, 1)
+  playList.splice(playIndex, 1)
+
+  let currentIndex = state.currentIndex
+  // currentIndex===playList.length为删除最后一首的情况
+  if (playIndex < currentIndex || currentIndex === playList.length) {
+    currentIndex--
+  }
+  commit('setSequenceList', sequenceList)
+  commit('setPlayList', playList)
+  // 如果删除正在播放的歌曲本身，playList发生变化导致currentSong发生变化，从而触发player的watch逻辑
+  commit('setCurrentIndex', currentIndex)
+  if (!playList.length) {
+    commit('setPlayingState', false)
+  }
+}
+
+export function clearSongList({ commit }) {
+  commit('setSequenceList', [])
+  commit('setCurrentIndex', 0)
+  commit('setPlayList', [])
+  // 触发player中的watch从而暂停歌曲播放
+  commit('setPlayingState', false)
+}
+
+function findIndex(list, song) {
+  return list.findIndex(item => item.id === song.id)
+}

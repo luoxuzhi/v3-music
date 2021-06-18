@@ -64,8 +64,7 @@ export default function useMiniSlider() {
     // 否则滑动到已经删除歌曲对应的DOM,专辑图展示不出来
     watch(playList, async newPlayList => {
       if (sliderVal && sliderShow.value && newPlayList.length) {
-        // 需要等dom真正更新完再刷新
-        await nextTick()
+        await nextTick() // 需要等dom真正更新完再刷新
         sliderVal.refresh()
       }
     })

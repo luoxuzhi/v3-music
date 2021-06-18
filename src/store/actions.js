@@ -62,9 +62,9 @@ export function removeSong({ commit, state }, song) {
 
 export function clearSongList({ commit }) {
   commit('setSequenceList', [])
-  commit('setCurrentIndex', 0)
   commit('setPlayList', [])
-  // 触发player中的watch从而暂停歌曲播放
+  commit('setCurrentIndex', 0)
+  // currentIndex变化触发player中的watch播放歌曲，需要手动暂停
   commit('setPlayingState', false)
 }
 

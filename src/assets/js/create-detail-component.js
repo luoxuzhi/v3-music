@@ -7,12 +7,12 @@ export default function createDetailComponent(name, key, fetch) {
     name,
     components: { MusicList },
     props: {
-      data: Object
+      data: Object,
     },
     data() {
       return {
         songs: [],
-        loading: true
+        loading: true,
       }
     },
     computed: {
@@ -30,26 +30,27 @@ export default function createDetailComponent(name, key, fetch) {
         return ret
       },
       pic() {
+        // 计算属性中，通过this.访问值的时候会触发依赖收集，所以访问一次以上的都缓存以优化性能
         const data = this.computedData
         return data && data.pic
       },
       title() {
         const data = this.computedData
         return data && (data.name || data.title)
-      }
+      },
     },
     async created() {
       const data = this.computedData
       if (!data) {
         const path = this.$route.matched[0].path
         this.$router.push({
-          path
+          path,
         })
         return
       }
       const result = await fetch(data)
       this.songs = await processSongs(result.songs)
       this.loading = false
-    }
+    },
   }
 }

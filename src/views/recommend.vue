@@ -10,7 +10,12 @@
         <div class="recommend-list">
           <h1 class="list-title" v-show="!loading">热门歌单推荐</h1>
           <ul>
-            <li v-for="item in albums" :key="item.id" class="item" @click="recommendItemClick(item)">
+            <li
+              v-for="item in albums"
+              :key="item.id"
+              class="item"
+              @click="recommendItemClick(item)"
+            >
               <div class="icon">
                 <img width="60" height="60" v-lazy="item.pic" alt="" />
               </div>
@@ -29,7 +34,7 @@
 <script>
 import { getRecommend } from '@/service/recommend'
 import Slider from '@/components/base/slider/slider'
-import Scroll from '@/components/base/scroll/scroll'
+import Scroll from '@/components/wrap-scroll'
 
 export default {
   components: { Slider, Scroll },

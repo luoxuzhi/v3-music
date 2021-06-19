@@ -27,9 +27,9 @@
 </template>
 
 <script>
-import Scroll from '@/components/base/scroll/scroll'
+import Scroll from '@/components/wrap-scroll'
 import SongList from '@/components/base/song-list/song-list'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 const RESERVE_HEIGHT = 40
 
@@ -82,6 +82,7 @@ export default {
         scale = 1 + Math.abs(scrollY / this.imageHeight)
       }
 
+      // 歌手详情页歌曲上拉能挡住详情页是因为外层容器没有设置overflow:hidden
       return {
         zIndex,
         paddingTop,
@@ -102,8 +103,10 @@ export default {
     // 因为设备不同具体高度不同，因此scoll.list容器的top值不能
     // 通过css设置，需要通过js计算后设置
     scrollStyle() {
+      const bottom = this.playList.length ? '60px' : 0 // 60px为mini player高度
       return {
         top: `${this.imageHeight}px`,
+        bottom,
       }
     },
     filterStyle() {
@@ -112,13 +115,15 @@ export default {
       const imageHeight = this.imageHeight
       // scrollY>0为上推
       if (scrollY >= 0) {
-        blur = Math.min(this.maxTranslateY / imageHeight, scrollY / imageHeight) * 20
+        blur =
+          Math.min(this.maxTranslateY / imageHeight, scrollY / imageHeight) * 20
       }
 
       return {
         backdropFilter: `blur(${blur}px)`,
       }
     },
+    ...mapState(['playList']),
   },
   methods: {
     goBack() {

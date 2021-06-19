@@ -15,5 +15,6 @@ module.exports = {
     'comma-dangle': 0,
     'eol-last': 0,
     'no-unused-vars': 0,
+    'prefer-const': 0,
   },
 }

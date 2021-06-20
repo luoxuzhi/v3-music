@@ -21,7 +21,7 @@ export default function usePullUpLoad(requestData, preventPullUpLoad) {
     scrollVal.on('pullingUp', pullingUpHandler)
 
     async function pullingUpHandler() {
-      if (preventPullUpLoad) {
+      if (preventPullUpLoad.value) {
         scrollVal.finishPullUp()
         return
       }

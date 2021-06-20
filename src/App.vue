@@ -2,7 +2,7 @@
   <m-header></m-header>
   <tab></tab>
   <router-view :style="viewStyle" />
-  <player></player>
+  <player />
 </template>
 
 <script>
@@ -19,6 +19,7 @@ export default {
   },
   computed: {
     ...mapState(['playList']),
+    // 保证一级路由页面在mini-player展示的时候底部自动有60px的距离
     viewStyle() {
       const bottom = this.playList.length ? '60px' : 0
       return { bottom }

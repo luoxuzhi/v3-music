@@ -2,6 +2,7 @@ import { h, mergeProps, withCtx, renderSlot, computed, ref, watch, nextTick } fr
 import { useStore } from 'vuex'
 import Scroll from '@/components/base/scroll/scroll'
 
+// 此组件用于mimi-player展示的时候自动刷新列表
 export default {
   name: 'wrap-scroll',
   components: { Scroll },

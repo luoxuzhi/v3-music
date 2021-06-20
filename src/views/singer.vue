@@ -16,9 +16,9 @@
 
 <script>
 import IndexList from '@/components/index-list/index-list'
-import storage from 'good-storage'
 import { getSingerList } from '@/service/singer'
 import { SINGER_KEY } from '@/assets/js/constant'
+import storage from 'good-storage'
 
 export default {
   data() {

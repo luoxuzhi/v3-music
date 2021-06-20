@@ -3,7 +3,7 @@
     <div class="search-input-wrapper">
       <search-input v-model="query"></search-input>
     </div>
-    <scroll class="search-content">
+    <scroll class="search-content" v-show="!query">
       <div>
         <div class="hot-keys">
           <div class="title">搜索历史</div>
@@ -20,6 +20,19 @@
         </div>
       </div>
     </scroll>
+    <div class="search-result" v-show="query">
+      <suggest
+        :query="query"
+        @select-singer="selectSinger"
+        @select-song="selectSong"
+      ></suggest>
+    </div>
+    <router-view v-slot="{ Component }">
+      <!-- appear为在当前路由时刷新时出现动画 -->
+      <transition appear name="slide">
+        <component :is="Component" :data="selectedSinger" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -27,17 +40,27 @@
 import { ref, watch } from 'vue'
 import { getHotKeys } from '@/service/search'
 import SearchInput from '@/components/search/search-input'
+import Suggest from '@/components/search/suggest'
 import Scroll from '@/components/wrap-scroll'
+import { SINGER_KEY } from '@/assets/js/constant'
+import storage from 'good-storage'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 export default {
   name: 'search',
   components: {
     SearchInput,
     Scroll,
+    Suggest,
   },
   setup() {
     const query = ref('')
     const hotKeys = ref([])
+    const selectedSinger = ref(null)
+
+    const store = useStore()
+    const router = useRouter()
 
     getHotKeys().then((res) => {
       hotKeys.value = res.hotKeys
@@ -48,7 +71,31 @@ export default {
     function addQuery(hotKey) {
       query.value = hotKey.key
     }
-    return { query, hotKeys, addQuery }
+
+    function selectSong(song) {
+      store.dispatch('addSong', song)
+    }
+
+    function selectSinger(singer) {
+      console.log('singer :', singer)
+      selectedSinger.value = singer
+      cacheSinger(singer)
+      router.push({
+        path: `/search/${singer.mid}`,
+      })
+    }
+    function cacheSinger(singer) {
+      storage.session.set(SINGER_KEY, singer)
+    }
+
+    return {
+      query,
+      hotKeys,
+      addQuery,
+      selectSinger,
+      selectSong,
+      selectedSinger,
+    }
   },
 }
 </script>

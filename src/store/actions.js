@@ -47,6 +47,7 @@ export function removeSong({ commit, state }, song) {
   playList.splice(playIndex, 1)
 
   let currentIndex = state.currentIndex
+  // playIndex < currentIndex 为删除正在播放歌曲前面的歌曲
   // currentIndex===playList.length为删除最后一首的情况
   if (playIndex < currentIndex || currentIndex === playList.length) {
     currentIndex--
@@ -66,6 +67,33 @@ export function clearSongList({ commit }) {
   commit('setCurrentIndex', 0)
   // currentIndex变化触发player中的watch播放歌曲，需要手动暂停
   commit('setPlayingState', false)
+}
+
+// 搜索页点击歌曲
+export function addSong({ commit, state }, song) {
+  const sequenceList = state.sequenceList.slice()
+  const playList = state.playList.slice()
+  let currentIndex = state.currentIndex
+
+  const playIndex = findIndex(playList, song)
+  const sequenceIndex = findIndex(sequenceList, song)
+
+  if (playIndex > -1) {
+    currentIndex = playIndex
+  } else {
+    playList.push(song)
+    currentIndex = playList.length - 1
+  }
+
+  if (sequenceIndex === -1) {
+    sequenceList.push(song)
+  }
+
+  commit('setSequenceList', sequenceList)
+  commit('setPlayList', playList)
+  commit('setCurrentIndex', currentIndex)
+  commit('setPlayingState', true)
+  commit('setFullScreen', true)
 }
 
 function findIndex(list, song) {

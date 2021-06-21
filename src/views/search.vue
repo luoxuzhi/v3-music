@@ -3,20 +3,40 @@
     <div class="search-input-wrapper">
       <search-input v-model="query"></search-input>
     </div>
-    <scroll class="search-content" v-show="!query">
+    <scroll ref="scrollRef" class="search-content" v-show="!query">
+      <!-- scroll只对第一个子元素起作用，所以hot-keys和search-history外面多包一层 -->
       <div>
         <div class="hot-keys">
-          <div class="title">搜索历史</div>
+          <div class="title">热门搜索</div>
           <ul>
             <li
               v-for="item in hotKeys"
               class="item"
               :key="item.id"
-              @click="addQuery(item)"
+              @click="addQuery(item.key)"
             >
               {{ item.key }}
             </li>
           </ul>
+        </div>
+        <div class="search-history" v-show="searchHistory.length">
+          <div class="title">
+            <span class="text">搜索历史</span>
+            <span class="icon" @click="showConfirm"
+              ><i class="icon-clear"></i
+            ></span>
+          </div>
+          <confirm
+            ref="confirmRef"
+            text="是否清空所有搜索历史？"
+            confirm-btn-text="清空"
+            @confirm="clearSearch"
+          ></confirm>
+          <search-list
+            :searches="searchHistory"
+            @select="addQuery"
+            @delete="removeSearch"
+          ></search-list>
         </div>
       </div>
     </scroll>
@@ -37,15 +57,18 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import { getHotKeys } from '@/service/search'
-import SearchInput from '@/components/search/search-input'
-import Suggest from '@/components/search/suggest'
-import Scroll from '@/components/wrap-scroll'
 import { SINGER_KEY } from '@/assets/js/constant'
-import storage from 'good-storage'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import storage from 'good-storage'
+import Scroll from '@/components/wrap-scroll' // 使用此组件是使得出现mini-player的时候可以自适应
+import useSearchHistory from '@/components/search/useSearchHistory'
+import SearchInput from '@/components/search/search-input'
+import Suggest from '@/components/search/suggest'
+import SearchList from '@/components/base/search-list/search-list'
+import Confirm from '@/components/base/confirm/confirm'
 
 export default {
   name: 'search',
@@ -53,39 +76,65 @@ export default {
     SearchInput,
     Scroll,
     Suggest,
+    SearchList,
+    Confirm,
   },
   setup() {
     const query = ref('')
     const hotKeys = ref([])
     const selectedSinger = ref(null)
+    const scrollRef = ref(null)
+    const confirmRef = ref(null)
 
     const store = useStore()
+    const searchHistory = computed(() => store.state.searchHistory)
+
     const router = useRouter()
+
+    // hooks
+    const { saveSearch, removeSearch, clearSearch } = useSearchHistory()
 
     getHotKeys().then((res) => {
       hotKeys.value = res.hotKeys
     })
 
-    watch(query, (newQuery) => console.log(newQuery))
+    // 关闭搜索结果页展示搜索历史的时候如果满足滚动条件需要刷新
+    // 因为scroll的内容是通过v-show控制
+    watch(query, async (newQuery) => {
+      if (!newQuery) {
+        await nextTick()
+        refreshScroll()
+      }
+    })
+
+    function refreshScroll() {
+      scrollRef.value.scroll.refresh()
+    }
 
     function addQuery(hotKey) {
-      query.value = hotKey.key
+      query.value = hotKey
     }
 
     function selectSong(song) {
+      saveSearch(query.value)
       store.dispatch('addSong', song)
     }
 
     function selectSinger(singer) {
-      console.log('singer :', singer)
+      saveSearch(query.value)
       selectedSinger.value = singer
       cacheSinger(singer)
       router.push({
         path: `/search/${singer.mid}`,
       })
     }
+
     function cacheSinger(singer) {
       storage.session.set(SINGER_KEY, singer)
+    }
+
+    function showConfirm() {
+      confirmRef.value.show()
     }
 
     return {
@@ -95,6 +144,13 @@ export default {
       selectSinger,
       selectSong,
       selectedSinger,
+      scrollRef,
+      confirmRef,
+      showConfirm,
+      searchHistory,
+      // useSearchHistory
+      removeSearch,
+      clearSearch,
     }
   },
 }

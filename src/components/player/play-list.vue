@@ -47,9 +47,9 @@
         </div>
         <confirm
           ref="confirmRef"
-          @confirm="confirmClear"
           text="是否清空播放列表？"
           confirm-btn-text="清空"
+          @confirm="confirmClear"
         ></confirm>
       </div>
     </transition>

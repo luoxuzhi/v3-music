@@ -122,6 +122,7 @@ import useCd from './useCd'
 import useLyric from './useLyric'
 import useMiddleInteractive from './useMiddleInteractive'
 import useAnimation from './useAnimation'
+import usePlayHistory from './usePlayHistory'
 import ProgressBar from './progress-bar.vue'
 import MiniPlayer from './mini-player.vue'
 import Scroll from '@/components/base/scroll/scroll'
@@ -180,6 +181,8 @@ export default {
     const { cdWrapperRef, enter, afterEnter, leave, afterLeave } =
       useAnimation()
 
+    const { savePlay } = usePlayHistory()
+
     // computed
     const playIcon = computed(() =>
       playing.value ? 'icon-pause' : 'icon-play'
@@ -237,6 +240,7 @@ export default {
       if (songReady.value) return
       songReady.value = true
       playLyric()
+      savePlay(currentSong.value)
     }
     // 加载出错允许点击下一首
     function error() {

@@ -36,7 +36,7 @@
             </transition-group>
           </scroll>
           <div class="list-add">
-            <div class="add">
+            <div class="add" @click="showAddSong">
               <i class="icon-add"></i>
               <span class="text">添加歌曲到队列</span>
             </div>
@@ -51,6 +51,7 @@
           confirm-btn-text="清空"
           @confirm="confirmClear"
         ></confirm>
+        <add-song ref="addSongRef"></add-song>
       </div>
     </transition>
   </teleport>
@@ -63,12 +64,14 @@ import useMode from './useMode'
 import useFavorite from './useFavorite'
 import Scroll from '@/components/base/scroll/scroll'
 import Confirm from '@/components/base/confirm/confirm'
+import AddSong from '@/components/add-song/add-song'
 
 export default {
   name: 'play-list',
   components: {
     Scroll,
     Confirm,
+    AddSong,
   },
   setup() {
     const visible = ref(false)
@@ -76,6 +79,7 @@ export default {
     const scrollComp = ref(null)
     const listRef = ref(null)
     const confirmRef = ref(null)
+    const addSongRef = ref(null)
 
     const store = useStore()
     const sequenceList = computed(() => store.state.sequenceList)
@@ -150,6 +154,10 @@ export default {
       hide()
     }
 
+    function showAddSong() {
+      addSongRef.value.show()
+    }
+
     return {
       sequenceList,
       playList,
@@ -160,11 +168,13 @@ export default {
       scrollComp,
       listRef,
       confirmRef,
+      addSongRef,
       selectItem,
       removeSong,
       removing,
       clear,
       confirmClear,
+      showAddSong,
       // useMode
       modeIcon,
       modeText,

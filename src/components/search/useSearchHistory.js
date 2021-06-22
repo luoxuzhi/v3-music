@@ -1,5 +1,4 @@
 import { useStore } from 'vuex'
-import { computed } from 'vue'
 import { SEARCH_KEY } from '@/assets/js/constant'
 import { save, remove, clear } from '@/assets/js/array-store'
 

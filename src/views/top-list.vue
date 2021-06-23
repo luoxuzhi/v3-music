@@ -1,5 +1,5 @@
 <template>
-  <div class="top-list">
+  <div class="top-list" v-loading="loading">
     <scroll class="top-list-content">
       <ul>
         <li
@@ -44,12 +44,14 @@ export default {
     return {
       topList: [],
       selectedTop: null,
+      loading: true,
     }
   },
   components: { Scroll },
   async created() {
     const result = await getTopList()
     this.topList = result.topList
+    this.loading = false
   },
   methods: {
     selectItem(top) {

@@ -9,7 +9,7 @@ const SingerDetail = () => import(/* webpackChunkName: "about" */ '@/views/singe
 const TopList = () => import(/* webpackChunkName: "about" */ '@/views/top-list.vue')
 const TopDetail = () => import(/* webpackChunkName: "about" */ '@/views/top-detail.vue')
 const Search = () => import(/* webpackChunkName: "about" */ '@/views/search.vue')
-const User = () => import(/* webpackChunkName: "about" */ '@/views/user.vue')
+const UserCenter = () => import(/* webpackChunkName: "about" */ '@/views/user-center.vue')
 
 const routes = [
   {
@@ -58,7 +58,9 @@ const routes = [
   },
   {
     path: '/user',
-    component: User,
+    components: {
+      user: UserCenter,
+    },
   },
 ]
 

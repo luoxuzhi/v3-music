@@ -2,6 +2,13 @@
   <m-header></m-header>
   <tab></tab>
   <router-view :style="viewStyle" />
+  <!-- 命名视图，只对user-center起作用 -->
+  <router-view :style="viewStyle" v-slot="{ Component }" name="user">
+    <!-- appear为在当前路由时刷新时出现动画 -->
+    <transition appear name="slide">
+      <component :is="Component" />
+    </transition>
+  </router-view>
   <player />
 </template>
 

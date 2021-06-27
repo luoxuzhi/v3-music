@@ -1,7 +1,9 @@
 import axios from 'axios'
 
 const ERROR_OK = 0
-axios.defaults.baseURL = '/'
+const baseURL = process.env.NODE_ENV === 'production' ? 'http://ncuxz.fun/vue3-music/' : '/'
+
+axios.defaults.baseURL = baseURL
 
 export function get(url, params) {
   return axios

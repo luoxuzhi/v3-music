@@ -28,4 +28,3 @@ yarn lint
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
-5-21 is finished

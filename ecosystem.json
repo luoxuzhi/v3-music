@@ -20,7 +20,7 @@
       "repo": "git@github.com:luoxuzhi/vue-music-next.git",
       "path": "/usr/local/project/v3-music/",
       "ssh_options": "StrictHostKeyChecking=no",
-      "pre-deploy": "npm install",
+      "pre-deploy": "git pull && npm install",
       "post-deploy": "npm run build && pm2 startOrRestart ecosystem.json --env production",
       "env": {
         "NODE_ENV": "production"

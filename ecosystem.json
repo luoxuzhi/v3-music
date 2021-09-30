@@ -14,13 +14,14 @@
   "deploy": {
     "production": {
       "user": "root",
-      "host": ["39.108.164.98"],
+      "host": ["129.226.170.239"],
       "port": "22",
       "ref": "origin/master",
       "repo": "git@github.com:luoxuzhi/vue-music-next.git",
       "path": "/usr/local/project/vue3-music/production",
       "ssh_options": "StrictHostKeyChecking=no",
-      "post-deploy": "npm install && npm run build && pm2 startOrRestart ecosystem.json --env production",
+      "pre-deploy": "npm install",
+      "post-deploy": "npm run build && pm2 startOrRestart ecosystem.json --env production",
       "env": {
         "NODE_ENV": "production"
       }

@@ -29,6 +29,7 @@ app.use(compression())
 app.use(express.static('./dist'))
 
 app.use(function(err, req, res, next) {
+  console.log('err:', err)
   if (err.code !== 'EBADCSRFTOKEN') {
     return next()
   }

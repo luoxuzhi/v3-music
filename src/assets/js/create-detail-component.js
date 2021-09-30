@@ -50,6 +50,7 @@ export default function createDetailComponent(name, key, fetch) {
       }
       const result = await fetch(data)
       this.songs = await processSongs(result.songs)
+      console.log('this.songs: ', this.songs)
       this.loading = false
     },
   }
